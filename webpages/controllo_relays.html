@@ -1,0 +1,32 @@
+<html>
+<head>
+<script>
+function accensione(comando) {
+   var xmlhttp = new XMLHttpRequest();
+   xmlhttp.onreadystatechange = function() {
+         if(xmlhttp.readyState == 1) {
+             document.getElementById("accensioneBox").innerHTML = "In Attesa di "+comando;
+         }
+         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+             document.getElementById("accensioneBox").innerHTML = comando+" eseguito";
+         }
+   }
+   xmlhttp.open("GET","/cgi-bin/relays/controllo_relays.py?"+comando,true);
+   xmlhttp.send();
+}
+</script>
+</head>
+<body>
+<H1> Controllo Relays </H1>
+
+<H3>Accensione</H3>
+<button onclick="accensione('accendi 22')">Accendi verde</button> 
+<button onclick="accensione('spegni 22')">Spegni verde</button> <br>
+<button onclick="accensione('accendi 23')">Accendi blu</button> 
+<button onclick="accensione('spegni 23')">Spegni blu</button> <br>
+<button onclick="accensione('accendi 24')">Accendi rosso</button> 
+<button onclick="accensione('spegni 24')">Spegni rosso</button> <br>
+<span id="accensioneBox"></span><br>
+
+</body>
+</html>
