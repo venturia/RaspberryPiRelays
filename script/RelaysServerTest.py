@@ -16,7 +16,7 @@ def stampa_stato():
     print "Stampo stato"
 
 
-port = 5001
+port = 5002
 server_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server_socket.bind(("",port))
 server_socket.listen(5)
@@ -28,6 +28,16 @@ GPIO.setup(22,GPIO.OUT)
 GPIO.output(22,False)    
 GPIO.setup(27,GPIO.OUT)
 GPIO.output(27,False)    
+GPIO.setup(14,GPIO.OUT)
+GPIO.output(14,False)    
+GPIO.setup(15,GPIO.OUT)
+GPIO.output(15,False)    
+GPIO.setup(23,GPIO.OUT)
+GPIO.output(23,False)    
+GPIO.setup(24,GPIO.OUT)
+GPIO.output(24,False)    
+GPIO.setup(25,GPIO.OUT)
+GPIO.output(25,False)    
 
 print "Pronto sulla porta ", port
 
