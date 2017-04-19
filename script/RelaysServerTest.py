@@ -2,6 +2,7 @@
 
 import sys
 import socket
+import getopt
 import RPi.GPIO as GPIO
 
 def accensione_relay(gpioch):
@@ -12,32 +13,47 @@ def spegnimento_relay(gpioch):
     print "Spengo GPIO ",gpioch
     GPIO.output(gpioch,False)    
 
-def stampa_stato():
+def stato_relays():
     print "Stampo stato"
+    for gpio,name,start,lock in gpioattrs:
+       print gpio,name,lock,GPIO.input(int(gpio))
 
-
+cfile = "default.txt"
 port = 5002
+gpioattrs=[]
 server_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server_socket.bind(("",port))
 server_socket.listen(5)
 
+try: 
+   opts, args = getopt.getopt(sys.argv[1:],"c:p:")
+except getopt.GetoptError:
+   print 'RelaysServerTest -c <config file> -p <port number>'
+   sys.exit(2)
+for opt, arg in opts:
+   if opt == '-p':
+      port = arg
+   if opt == '-c':
+      cfile = arg
+
+print "File di configurazione: ",cfile
+
+ocfile = open(cfile)
+line = ocfile.readline()
+while len(line):
+  gpioattr=line.split()
+  print len(gpioattr), gpioattr
+  if len(gpioattr)==4:
+    gpioattrs.append(gpioattr)
+  line =ocfile.readline()
+print "end of file reached"
+print gpioattrs
+
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(17,GPIO.OUT)
-GPIO.output(17,False)    
-GPIO.setup(22,GPIO.OUT)
-GPIO.output(22,False)    
-GPIO.setup(27,GPIO.OUT)
-GPIO.output(27,False)    
-GPIO.setup(14,GPIO.OUT)
-GPIO.output(14,False)    
-GPIO.setup(15,GPIO.OUT)
-GPIO.output(15,False)    
-GPIO.setup(23,GPIO.OUT)
-GPIO.output(23,False)    
-GPIO.setup(24,GPIO.OUT)
-GPIO.output(24,False)    
-GPIO.setup(25,GPIO.OUT)
-GPIO.output(25,False)    
+for gpio, name, start, lock in gpioattrs:
+   print gpio,name,start,lock
+   GPIO.setup(int(gpio),GPIO.OUT)
+   GPIO.output(int(gpio),start=="True")
 
 print "Pronto sulla porta ", port
 
@@ -48,12 +64,17 @@ try:
        data = client_socket.recv(512)
        print "RECIEVED:" , data
        command=data.split()
-       print command
-       if command[0] == 'accendi':
-          accensione_relay(int(command[1]))
-       if command[0] == 'spegni':
-          spegnimento_relay(int(command[1]))
-
+       if len(command)>1:
+         if command[0] == 'accendi':
+            accensione_relay(int(command[1]))
+            client_socket.send("accensione GPIO "+command[1]+" eseguita")
+         if command[0] == 'spegni':
+            spegnimento_relay(int(command[1]))
+            client_socket.send("spegnimento GPIO "+command[1]+ " +eseguito")
+       if command[0] == 'stato':
+            stato_relays()
+            client_socket.send("richiesta stato eseguita")
+       client_socket.close()
 except KeyboardInterrupt:
      print "Program interrupted"
   
