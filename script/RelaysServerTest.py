@@ -3,6 +3,7 @@
 import sys
 import socket
 import getopt
+import StringIO
 import RPi.GPIO as GPIO
 
 def accensione_relay(gpioch):
@@ -13,10 +14,12 @@ def spegnimento_relay(gpioch):
     print "Spengo GPIO ",gpioch
     GPIO.output(gpioch,False)    
 
-def stato_relays():
+def stato_relays(csock):
     print "Stampo stato"
+    status = StringIO.StringIO()
     for gpio,name,start,lock in gpioattrs:
-       print gpio,name,lock,GPIO.input(int(gpio))
+       print>>status, gpio,name,lock,GPIO.input(int(gpio))
+    csock.send(status.getvalue())
 
 cfile = "default.txt"
 port = 5002
@@ -72,7 +75,6 @@ try:
             spegnimento_relay(int(command[1]))
             client_socket.send("spegnimento GPIO "+command[1]+ " +eseguito")
        if command[0] == 'stato':
-            stato_relays()
             client_socket.send("richiesta stato eseguita")
        client_socket.close()
 except KeyboardInterrupt:
