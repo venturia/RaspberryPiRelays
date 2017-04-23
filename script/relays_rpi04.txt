@@ -1,9 +1,9 @@
-17 relay_1 False False
-27 relay_2 False False
-22 relay_3 False False
-23 RGB_rosso False False
-24 RGB_blu False False
-14 relay_4 False False
-15 xxxx False False
-25 RGB_verde False False
+17 relay_1 1 1 0 False
+27 relay_2 1 1 0 False
+22 relay_3 1 1 0 False
+23 RGB_rosso 1 1 0 False
+24 RGB_blu 1 1 0 False
+14 relay_4 1 1 0 False
+15 xxxx 1 1 0 False
+25 RGB_verde 1 1 0 False
 

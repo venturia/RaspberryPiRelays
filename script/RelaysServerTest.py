@@ -6,24 +6,48 @@ import getopt
 import StringIO
 import RPi.GPIO as GPIO
 
-def accensione_relay(gpioch):
-    print "Accendo GPIO ",gpioch
-    GPIO.output(gpioch,True)    
+def trova_gpiostatus(gpioch):
+    return next((st for st in gpiostatuses if st[0]==gpioch),[])
 
-def spegnimento_relay(gpioch):
-    print "Spengo GPIO ",gpioch
-    GPIO.output(gpioch,False)    
+def decidi_relay(gpiost):
+    print "decidere GPIO",gpiost[0],gpiost[4],gpiost[3]
+    if gpiost[4]>=gpiost[3]:
+        GPIO.output(gpiost[0],True)    
+    else:
+        GPIO.output(gpiost[0],False)    
+
+def accensione_relay(gpiost):
+    print "Accendo GPIO ",gpiost[0]
+    gpiost[4]=gpiost[2]	
+    decidi_relay(gpiost)
+
+def abilitazione_bit_relay(gpiost,bit):
+    print "Abilito bit",bit," GPIO ",gpiost[0]
+    gpiost[4]= gpiost[4] | (2**bit & gpiost[2])	# in this way bits outside the mask are ignored
+    decidi_relay(gpiost)
+
+def spegnimento_relay(gpiost):
+    print "Spengo GPIO ",gpiost[0]
+    gpiost[4]=0	
+    decidi_relay(gpiost)
+
+def disabilitazione_bit_relay(gpiost,bit):
+    print "Abilito bit",bit," GPIO ",gpiost[0]
+    gpiost[4]= gpiost[4] & ((~(2**bit)) & gpiost[2]) # in this way bits outside the mask are ignored
+    decidi_relay(gpiost)
 
 def stato_relays(csock):
     print "Stampo stato"
-    status = StringIO.StringIO()
-    for gpio,name,start,lock in gpioattrs:
-       print>>status, gpio,name,lock,GPIO.input(int(gpio))
-    csock.send(status.getvalue())
+    statusstring = StringIO.StringIO()
+    for gpio,name,mask,oncond,status,lock in gpiostatuses:
+       print>>statusstring, gpio,name,mask,oncond,status,lock,GPIO.input(gpio)
+    csock.send(statusstring.getvalue())
 
 cfile = "default.txt"
 port = 5002
+STATUSELEMENTS=6
 gpioattrs=[]
+gpiostatuses=[]
 server_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server_socket.bind(("",port))
 server_socket.listen(5)
@@ -46,17 +70,18 @@ line = ocfile.readline()
 while len(line):
   gpioattr=line.split()
   print len(gpioattr), gpioattr
-  if len(gpioattr)==4:
+  if len(gpioattr)==STATUSELEMENTS:
     gpioattrs.append(gpioattr)
   line =ocfile.readline()
 print "end of file reached"
-print gpioattrs
 
 GPIO.setmode(GPIO.BCM)
-for gpio, name, start, lock in gpioattrs:
-   print gpio,name,start,lock
+for gpio, name, mask, oncond, start, lock in gpioattrs:
    GPIO.setup(int(gpio),GPIO.OUT)
-   GPIO.output(int(gpio),start=="True")
+   gpiostatus=[int(gpio),name,int(mask),int(oncond),int(start),lock=="True"]
+   print gpiostatus
+   gpiostatuses.append(gpiostatus)
+   GPIO.output(int(gpio),int(start)>=int(oncond))
 
 print "Pronto sulla porta ", port
 
@@ -68,13 +93,30 @@ try:
        print "RECIEVED:" , data
        command=data.split()
        if len(command)>1:
-         if command[0] == 'accendi':
-            accensione_relay(int(command[1]))
-            client_socket.send("accensione GPIO "+command[1]+" eseguita")
-         if command[0] == 'spegni':
-            spegnimento_relay(int(command[1]))
-            client_socket.send("spegnimento GPIO "+command[1]+ " +eseguito")
-       if command[0] == 'stato':
+          gpiost = trova_gpiostatus(int(command[1]))
+          if len(gpiost)==STATUSELEMENTS:
+             if len(command)>2:
+                 gpiobit=2**int(command[2]) & gpiost[2]
+                 if gpiobit>0:
+                    if command[0] == 'abilita':
+                        abilitazione_bit_relay(gpiost,int(command[2]))
+                        client_socket.send("abilitazione bit %s GPIO %d eseguita" % (command[2], gpiost[0]))
+                    if command[0] == 'disabilita':
+                        disabilitazione_bit_relay(gpiost,int(command[2]))
+                        client_socket.send("disabilitazione bit %s GPIO %d eseguito" % (command[2], gpiost[0]))
+                 else:
+                    client_socket("bit da (dis)abilitare non valido") 
+             elif len(command)>1:
+                if command[0] == 'accendi':
+                    accensione_relay(gpiost)
+                    client_socket.send("accensione GPIO %d eseguita" % gpiost[0])
+                if command[0] == 'spegni':
+                    spegnimento_relay(gpiost)
+                    client_socket.send("spegnimento GPIO %d eseguito" % gpiost[0])
+          else:
+             client_socket.send("Numero porta GPIO non riconosciuto") 
+       elif command[0] == 'stato':
+            stato_relays(client_socket)
             client_socket.send("richiesta stato eseguita")
        client_socket.close()
 except KeyboardInterrupt:
