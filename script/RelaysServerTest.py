@@ -48,9 +48,6 @@ port = 5002
 STATUSELEMENTS=6
 gpioattrs=[]
 gpiostatuses=[]
-server_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-server_socket.bind(("",port))
-server_socket.listen(5)
 
 try: 
    opts, args = getopt.getopt(sys.argv[1:],"c:p:")
@@ -59,7 +56,7 @@ except getopt.GetoptError:
    sys.exit(2)
 for opt, arg in opts:
    if opt == '-p':
-      port = arg
+      port = int(arg)
    if opt == '-c':
       cfile = arg
 
@@ -86,11 +83,13 @@ for gpio, name, mask, oncond, start, lock in gpioattrs:
 print "Pronto sulla porta ", port
 
 try: 
+   server_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+   server_socket.bind(("",port))
+   server_socket.listen(5)
    while True:
        client_socket, address =server_socket.accept()
-       print "Connection from ", address
        data = client_socket.recv(512)
-       print "RECIEVED:" , data
+       print "RECEIVED from ",address, " :" , data
        command=data.split()
        if len(command)>1:
           gpiost = trova_gpiostatus(int(command[1]))
