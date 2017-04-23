@@ -18,12 +18,12 @@ def decidi_relay(gpiost):
 
 def accensione_relay(gpiost):
     print "Accendo GPIO ",gpiost[0]
-    gpiost[4]=gpiost[2]	
+    gpiost[4]=2**gpiost[2]-1	
     decidi_relay(gpiost)
 
 def abilitazione_bit_relay(gpiost,bit):
     print "Abilito bit",bit," GPIO ",gpiost[0]
-    gpiost[4]= gpiost[4] | (2**bit & gpiost[2])	# in this way bits outside the mask are ignored
+    gpiost[4]= gpiost[4] | (2**bit & 2**gpiost[2]-1)	# in this way bits outside the mask are ignored
     decidi_relay(gpiost)
 
 def spegnimento_relay(gpiost):
@@ -33,7 +33,7 @@ def spegnimento_relay(gpiost):
 
 def disabilitazione_bit_relay(gpiost,bit):
     print "Abilito bit",bit," GPIO ",gpiost[0]
-    gpiost[4]= gpiost[4] & ((~(2**bit)) & gpiost[2]) # in this way bits outside the mask are ignored
+    gpiost[4]= gpiost[4] & ((~(2**bit)) & 2**gpiost[2]-1) # in this way bits outside the mask are ignored
     decidi_relay(gpiost)
 
 def stato_relays(csock):
@@ -74,6 +74,9 @@ print "end of file reached"
 
 GPIO.setmode(GPIO.BCM)
 for gpio, name, mask, oncond, start, lock in gpioattrs:
+   if (int(oncond) > 2**int(mask)-1 ) | (int(start) > 2**int(mask)-1):
+      print "Configurazione non corretta: ",mask,oncond,start
+      sys.exit(2)
    GPIO.setup(int(gpio),GPIO.OUT)
    gpiostatus=[int(gpio),name,int(mask),int(oncond),int(start),lock=="True"]
    print gpiostatus
@@ -95,7 +98,7 @@ try:
           gpiost = trova_gpiostatus(int(command[1]))
           if len(gpiost)==STATUSELEMENTS:
              if len(command)>2:
-                 gpiobit=2**int(command[2]) & gpiost[2]
+                 gpiobit=2**int(command[2]) & 2**gpiost[2]-1
                  if gpiobit>0:
                     if command[0] == 'abilita':
                         abilitazione_bit_relay(gpiost,int(command[2]))

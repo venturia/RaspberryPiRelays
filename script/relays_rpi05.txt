@@ -1,5 +1,5 @@
-6 RGB_rosso 7 7 0  False
-13 RGB_verde 7 1 0 False
+6 RGB_rosso 3 7 0  False
+13 RGB_verde 3 1 0 False
 19 RGB_blu 1 1 0 False
 26 xxxx 1 1 0 False
 12 relay_4 1 1 0 False
