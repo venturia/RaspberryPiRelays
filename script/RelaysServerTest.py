@@ -105,7 +105,7 @@ try:
                         disabilitazione_bit_relay(gpiost,int(command[2]))
                         client_socket.send("disabilitazione bit %s GPIO %d eseguito" % (command[2], gpiost[0]))
                  else:
-                    client_socket("bit da (dis)abilitare non valido") 
+                    client_socket.send("bit da (dis)abilitare non valido") 
              elif len(command)>1:
                 if command[0] == 'accendi':
                     accensione_relay(gpiost)
