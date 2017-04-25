@@ -16,6 +16,6 @@ if len(sys.argv) > 1:
      reply.append(replychunk)
      replychunk = client_socket.recv(16)
    print "Content-type: text/html\n\n"
-   print "Risposta server: ",''.join(reply)
+   print "Risposta server: \n",''.join(reply)
 client_socket.close()
 
