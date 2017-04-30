@@ -8,9 +8,11 @@ import cgitb
 import relaylib
 cgitb.enable()
 
+form=cgi.FieldStorage()
+
 print "Content-type: text/html\n\n"
-if len(sys.argv) > 1:
-   print "Risposta server: ",relaylib.spegni("localhost",5002,int(sys.argv[1]))
+if len(form.getvalue('gpioch')) > 0:
+   print "Risposta server: ",relaylib.spegni(form.getvalue('host'),int(form.getvalue('port')),int(form.getvalue('gpioch')))
 else: 
    print "Nessun argomento per il comando di spegnimento"
 

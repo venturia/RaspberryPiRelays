@@ -1,7 +1,6 @@
 <html>
 <head>
 <script>
-stato()
 function accensione(gpioch) {
    var xmlhttp = new XMLHttpRequest();
    xmlhttp.onreadystatechange = function() {
@@ -13,7 +12,7 @@ function accensione(gpioch) {
              stato()
          }
    }
-   xmlhttp.open("GET","/cgi-bin/relays/accensione_relays.py?"+gpioch,true);
+   xmlhttp.open("GET","/cgi-bin/relays/accensione_relays.py?gpioch="+gpioch+"&host="+document.getElementById("host").value+"&port="+document.getElementById("port").value,true);
    xmlhttp.send();
 }
 function spegnimento(gpioch) {
@@ -27,7 +26,7 @@ function spegnimento(gpioch) {
              stato()
          }
    }
-   xmlhttp.open("GET","/cgi-bin/relays/spegnimento_relays.py?"+gpioch,true);
+   xmlhttp.open("GET","/cgi-bin/relays/spegnimento_relays.py?gpioch="+gpioch+"&host="+document.getElementById("host").value+"&port="+document.getElementById("port").value,true);
    xmlhttp.send();
 }
 function stato() {
@@ -40,14 +39,15 @@ function stato() {
              document.getElementById("statusBox").innerHTML = xmlhttp.responseText;
          }
    }
-   xmlhttp.open("GET","/cgi-bin/relays/stato_relays.py",true);
+   xmlhttp.open("GET","/cgi-bin/relays/stato_relays.py?host="+document.getElementById("host").value+"&port="+document.getElementById("port").value,true);
    xmlhttp.send();
 }
 </script>
 </head>
 <body>
 <H1> Controllo Relays </H1>
-
+Indirizzo IP:<input type=text id=host value="localhost"> Porta:<input type=text id=port value=5002>
+<script> stato() </script>
 <H3>Accensione</H3>
 <span id="statusBox"></span><br>
 <button onclick="stato()">stato</button> <br>
