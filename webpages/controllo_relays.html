@@ -10,6 +10,7 @@ function accensione(gpioch) {
          }
          if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
              document.getElementById("accensioneBox").innerHTML = xmlhttp.responseText;
+             stato()
          }
    }
    xmlhttp.open("GET","/cgi-bin/relays/accensione_relays.py?"+gpioch,true);
@@ -23,6 +24,7 @@ function spegnimento(gpioch) {
          }
          if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
              document.getElementById("accensioneBox").innerHTML = xmlhttp.responseText;
+             stato()
          }
    }
    xmlhttp.open("GET","/cgi-bin/relays/spegnimento_relays.py?"+gpioch,true);
@@ -40,14 +42,6 @@ function stato() {
    }
    xmlhttp.open("GET","/cgi-bin/relays/stato_relays.py",true);
    xmlhttp.send();
-}
-function accensione_stato(gpioch) {
-   accensione(gpioch)
-   stato()
-}
-function spegnimento_stato(gpioch) {
-   spegnimento(gpioch)
-   stato()
 }
 </script>
 </head>

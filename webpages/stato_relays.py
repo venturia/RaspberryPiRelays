@@ -23,8 +23,8 @@ for gpioch,name,status,lock in zip(statusdict['gpioch'],statusdict['name'],statu
    else:
       print >>statusstring, "(GPIO %d) %s  <font color='grey'>OFF</font>" % (gpioch,name)
  
-   print >>statusstring, "<button %s onclick='accensione_stato(%d)'>Accendi</button>" % (disabled,gpioch)
-   print >>statusstring, "<button %s onclick='spegnimento_stato(%d)'>Spegni</button><br>" % (disabled,gpioch)
+   print >>statusstring, "<button %s onclick='accensione(%d)'>Accendi</button>" % (disabled,gpioch)
+   print >>statusstring, "<button %s onclick='spegnimento(%d)'>Spegni</button><br>" % (disabled,gpioch)
 
 print "Content-type: text/html\n\n"
 if len(statusstring.getvalue())>0:
