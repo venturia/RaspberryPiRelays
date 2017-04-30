@@ -1,6 +1,7 @@
 <html>
 <head>
 <script>
+stato()
 function accensione(comando) {
    var xmlhttp = new XMLHttpRequest();
    xmlhttp.onreadystatechange = function() {
@@ -14,19 +15,37 @@ function accensione(comando) {
    xmlhttp.open("GET","/cgi-bin/relays/controllo_relays.py?"+comando,true);
    xmlhttp.send();
 }
+function stato() {
+   var xmlhttp = new XMLHttpRequest();
+   xmlhttp.onreadystatechange = function() {
+         if(xmlhttp.readyState == 1) {
+             document.getElementById("statusBox").innerHTML = "In Attesa dello stato ";
+         }
+         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+             document.getElementById("statusBox").innerHTML = xmlhttp.responseText;
+         }
+   }
+   xmlhttp.open("GET","/cgi-bin/relays/stato_relays.py",true);
+   xmlhttp.send();
+}
+function accensione_stato(comando) {
+   accensione(comando)
+   stato()
+}
 </script>
 </head>
 <body>
 <H1> Controllo Relays </H1>
 
 <H3>Accensione</H3>
-<button onclick="accensione('accendi 13')">Accendi verde</button> 
-<button onclick="accensione('spegni 13')">Spegni verde</button> <br>
-<button onclick="accensione('accendi 19')">Accendi blu</button> 
-<button onclick="accensione('spegni 19')">Spegni blu</button> <br>
-<button onclick="accensione('accendi 6')">Accendi rosso</button> 
-<button onclick="accensione('spegni 6')">Spegni rosso</button> <br>
-<button onclick="accensione('stato')">stato</button> <br>
+<span id="statusBox"></span><br>
+<button onclick="accensione_stato('accendi 13')">Accendi verde</button> 
+<button onclick="accensione_stato('spegni 13')">Spegni verde</button> <br>
+<button onclick="accensione_stato('accendi 19')">Accendi blu</button> 
+<button onclick="accensione_stato('spegni 19')">Spegni blu</button> <br>
+<button onclick="accensione_stato('accendi 6')">Accendi rosso</button> 
+<button onclick="accensione_stato('spegni 6')">Spegni rosso</button> <br>
+<button onclick="stato()">stato</button> <br>
 <span id="accensioneBox"></span><br>
 
 </body>
