@@ -84,7 +84,7 @@ for gpio, name, mask, oncond, start, lock in gpioattrs:
       print "Configurazione non corretta: ",mask,oncond,start
       sys.exit(2)
    GPIO.setup(int(gpio),GPIO.OUT)
-   gpiostatus=[int(gpio),name,int(mask),int(oncond),int(start),lock=="True"]
+   gpiostatus=[int(gpio),name,int(mask),int(oncond),int(start),int(lock)]
    print gpiostatus
    gpiostatuses.append(gpiostatus)
    GPIO.output(int(gpio),int(start)>=int(oncond))

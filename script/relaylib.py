@@ -53,7 +53,7 @@ def stato(host,port):
             nbits.append(int(gpiostatus[2])) 	
             oncond.append(int(gpiostatus[3])) 	
             bitstatus.append(int(gpiostatus[4])) 	
-            locked.append(gpiostatus[5]) 	
+            locked.append(int(gpiostatus[5])) 	
             status.append(int(gpiostatus[6])) 	
     return statuslist[0],statusdict
        
