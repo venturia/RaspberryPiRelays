@@ -36,9 +36,15 @@ def disabilitazione_bit_relay(gpiost,bit):
     gpiost[4]= gpiost[4] & ((~(2**bit)) & 2**gpiost[2]-1) # in this way bits outside the mask are ignored
     decidi_relay(gpiost)
 
+def set_bit_relay(gpiost,bitmask):
+    print "Configuro bit mask ",bitmask," GPIO ",gpiost[0]
+    gpiost[4]= bitmask & (2**gpiost[2]-1) # in this way bits outside the mask are ignored
+    decidi_relay(gpiost)
+
 def stato_relays(csock):
     print "Stampo stato"
     statusstring = StringIO.StringIO()
+    print>>statusstring, "$0$ *richiesta stato eseguita*"
     for gpio,name,mask,oncond,status,lock in gpiostatuses:
        print>>statusstring, gpio,name,mask,oncond,status,lock,GPIO.input(gpio)
     csock.send(statusstring.getvalue())
@@ -98,28 +104,40 @@ try:
           gpiost = trova_gpiostatus(int(command[1]))
           if len(gpiost)==STATUSELEMENTS:
              if len(command)>2:
-                 gpiobit=2**int(command[2]) & 2**gpiost[2]-1
-                 if gpiobit>0:
                     if command[0] == 'abilita':
-                        abilitazione_bit_relay(gpiost,int(command[2]))
-                        client_socket.send("abilitazione bit %s GPIO %d eseguita" % (command[2], gpiost[0]))
+                        gpiobit=2**int(command[2]) & 2**gpiost[2]-1
+                        if gpiobit>0:
+                           abilitazione_bit_relay(gpiost,int(command[2]))
+                           client_socket.send("$0$ *abilitazione bit %s GPIO %d eseguita*" % (command[2], gpiost[0]))
+                        else:
+                           print "bit da abiltare non valido"
+                           client_socket.send("$21$ *bit da (dis)abilitare non valido*") 
                     if command[0] == 'disabilita':
-                        disabilitazione_bit_relay(gpiost,int(command[2]))
-                        client_socket.send("disabilitazione bit %s GPIO %d eseguito" % (command[2], gpiost[0]))
-                 else:
-                    client_socket.send("bit da (dis)abilitare non valido") 
+                        gpiobit=2**int(command[2]) & 2**gpiost[2]-1
+                        if gpiobit>0:
+                           disabilitazione_bit_relay(gpiost,int(command[2]))
+                           client_socket.send("$0$ *disabilitazione bit %s GPIO %d eseguita*" % (command[2], gpiost[0]))
+                        else:
+                           print "bit da disabiltare non valido"
+                           client_socket.send("$21$ *bit da (dis)abilitare non valido*") 
+                    if command[0] == 'configura':
+                        if int(command[2]) == (int(command[2]) & 2**gpiost[2]-1):
+                           set_bit_relay(gpiost,int(command[2]))
+                           client_socket.send("$0$ *configura bits %s GPIO %d eseguita*" % (command[2], gpiost[0]))
+                        else:
+                           print "bitmask da configurare non valida"
+                           client_socket.send("$22$ *bitmask da configurare non valida*") 
              elif len(command)>1:
                 if command[0] == 'accendi':
                     accensione_relay(gpiost)
-                    client_socket.send("accensione GPIO %d eseguita" % gpiost[0])
+                    client_socket.send("$0$ *accensione GPIO %d eseguita*" % gpiost[0])
                 if command[0] == 'spegni':
                     spegnimento_relay(gpiost)
-                    client_socket.send("spegnimento GPIO %d eseguito" % gpiost[0])
+                    client_socket.send("$0$ *spegnimento GPIO %d eseguito*" % gpiost[0])
           else:
-             client_socket.send("Numero porta GPIO non riconosciuto") 
+             client_socket.send("$31$ *Numero porta GPIO non riconosciuto*") 
        elif command[0] == 'stato':
             stato_relays(client_socket)
-            client_socket.send("richiesta stato eseguita")
        client_socket.close()
 except KeyboardInterrupt:
      print "Program interrupted"
