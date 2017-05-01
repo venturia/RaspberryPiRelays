@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys
-sys.path.append('/home/pi/RaspberryRelays/script')
+sys.path.append('/home/pi/RaspberryPiRelays/script')
 import socket
 import cgi
 import cgitb
