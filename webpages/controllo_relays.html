@@ -1,6 +1,27 @@
 <html>
 <head>
 <script>
+function configurazione_bitmask(gpioch,nbits) {
+   var xmlhttp = new XMLHttpRequest();
+   var bitmask = 0;
+   for (i=0; i < nbits; i++) {
+      var checkbox = gpioch+"_"+i;
+      if(document.getElementById(checkbox).checked) {
+        bitmask += Number(document.getElementById(checkbox).value);
+      }
+   }
+   xmlhttp.onreadystatechange = function() {
+         if(xmlhttp.readyState == 1) {
+             document.getElementById("accensioneBox").innerHTML = "In Attesa di configurazione "+gpioch;
+         }
+         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+             document.getElementById("accensioneBox").innerHTML = xmlhttp.responseText;
+             stato()
+         }
+   }
+   xmlhttp.open("GET","/cgi-bin/relays/configura_bitmask.py?gpioch="+gpioch+"&bitmask="+bitmask+"&host="+document.getElementById("host").value+"&port="+document.getElementById("port").value,true);
+   xmlhttp.send();
+}
 function accensione(gpioch) {
    var xmlhttp = new XMLHttpRequest();
    xmlhttp.onreadystatechange = function() {
