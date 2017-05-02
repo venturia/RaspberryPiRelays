@@ -126,7 +126,7 @@ try:
                            client_socket.send("$0$ *configura bits %s GPIO %d eseguita*" % (command[2], gpiost[0]))
                         else:
                            print "bitmask da configurare non valida"
-                           client_socket.send("$22$ *bitmask da configurare non valida*") 
+                           client_socket.send("$22$ *bitmask %s non valida per GPIO %d*" % (command[2], gpiost[0])) 
              elif len(command)>1:
                 if command[0] == 'accendi':
                     accensione_relay(gpiost)
