@@ -1,10 +1,17 @@
 #!/usr/bin/python -u
 
+import signal
 import sys
 import socket
 import getopt
 import StringIO
 import RPi.GPIO as GPIO
+
+class GracefulSigTerm(Exception):
+    pass
+
+def sigterm_handler(signum,frame):
+    raise GracefulSigTerm()
 
 def trova_gpiostatus(gpioch):
     return next((st for st in gpiostatuses if st[0]==gpioch),[])
@@ -48,6 +55,8 @@ def stato_relays(csock):
     for gpio,name,mask,oncond,status,lock in gpiostatuses:
        print>>statusstring, gpio,name,mask,oncond,status,lock,GPIO.input(gpio)
     csock.send(statusstring.getvalue())
+
+signal.signal(signal.SIGTERM, sigterm_handler)
 
 cfile = "default.txt"
 port = 5002
@@ -142,6 +151,9 @@ try:
 except KeyboardInterrupt:
      print "Program interrupted"
   
+except GracefulSigTerm:
+     print "Server terminated by SIGTERM"
+
 except:
      print "Program aborted with unexpected error: ", sys.exc_info()[0]
 
