@@ -4,7 +4,7 @@ WEBDIR=/var/www/html
 CGIDIR=/usr/lib/cgi-bin
 SYSTEMDLIB=/lib/systemd/system
 SERVERPORT=5002
-SERVERCONFIGFILE="relays_rpi05.txt"
+SERVERCONFIGFILE=""
 
 read -p "web server file directory [$WEBDIR]" chosenwebdir
 
@@ -17,10 +17,7 @@ if [ ${#chosenserverport} != 0 ]; then
   SERVERPORT=$chosenserverport
 fi
 read -p "Server configuration file [$SERVERCONFIGFILE]" chosenconfigfile
-
-if [ ${#chosenconfigfile} != 0 ]; then
-  SERVERCONFIGFILE=$chosenconfigfile
-fi
+SERVERCONFIGFILE=$chosenconfigfile
 
 echo "Web page file directory $WEBDIR"
 echo "Server port $SERVERPORT"
@@ -51,9 +48,13 @@ sed 's:INSTALLATIONDIRECTORY:'${PWD}':g' webpages/stato_relays.py > ${CGIDIR}/re
 
 # prepare and copy the configuration file of thr service for systemd
 
-echo "Preparing the configuration file for systemd"
-sed 's:INSTALLATIONDIRECTORY:'${PWD}':g;s:SERVERPORT:'${SERVERPORT}':g;s:SERVERCONFIGFILE:'${SERVERCONFIGFILE}':g' relayserver.service > ${SYSTEMDLIB}/relayserver.service
-systemctl daemon-reload
-systemctl stop relayserver.service
-systemctl start relayserver.service
-
+if [ ${#SERVERCONFIGFILE} != 0 ]
+ then
+  echo "Preparing the configuration file for systemd"
+  sed 's:INSTALLATIONDIRECTORY:'${PWD}':g;s:SERVERPORT:'${SERVERPORT}':g;s:SERVERCONFIGFILE:'${SERVERCONFIGFILE}':g' relayserver.service > ${SYSTEMDLIB}/relayserver.service
+  systemctl daemon-reload
+  systemctl stop relayserver.service
+  systemctl start relayserver.service
+else
+  echo "The server will NOT be installed on this node"
+fi
