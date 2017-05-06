@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=INSTALLATIONDIRECTORY/script/RelaysServerTest.py -p SERVERPORT -c INSTALLATIONDIRECTORY/script/SERVERCONFIGFILE
+ExecStart=INSTALLATIONDIRECTORY/script/RelaysServerTest.py --savedrestart -p SERVERPORT -c INSTALLATIONDIRECTORY/script/SERVERCONFIGFILE
 Restart=on-failure
 RestartSec=180
 
