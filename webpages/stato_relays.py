@@ -4,7 +4,7 @@
 import sys
 import StringIO
 
-sys.path.append('/home/pi/RaspberryPiRelays/script')
+sys.path.append('INSTALLATIONDIRECTORY/script')
 import socket
 import cgi
 import cgitb
