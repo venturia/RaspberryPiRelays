@@ -1,5 +1,6 @@
 #!/usr/bin/python -u
 
+import os
 import signal
 import sys
 import socket
@@ -59,6 +60,7 @@ def stato_relays(csock):
 signal.signal(signal.SIGTERM, sigterm_handler)
 
 cfile = "default.txt"
+savedfile = os.path.dirname(sys.argv[0])+"/status.saved"
 port = 5002
 STATUSELEMENTS=6
 gpioattrs=[]
@@ -164,3 +166,8 @@ finally:
    print "Closing socket..."   	
    ret=server_socket.close()
    print "socket closed ",ret 
+   print "ready to save the status in ",savedfile
+   sout = open(savedfile,"w")
+   for gpio,name,mask,oncond,status,lock in gpiostatuses:
+       print>>sout, gpio,name,mask,oncond,status,lock
+   	
