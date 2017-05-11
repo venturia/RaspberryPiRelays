@@ -1,7 +1,7 @@
 17 relay_1 1 1 0 0
 27 relay_2 1 1 0 0
 22 relay_3 1 1 0 0
-23 RGB_rosso 1 1 0 0
+23 RGB_rosso 2 1 0 1
 24 RGB_blu 1 1 0 0
-25 RGB_verde 1 1 0 0
+25 RGB_verde 2 3 0 1
 
