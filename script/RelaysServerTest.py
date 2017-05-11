@@ -1,5 +1,6 @@
 #!/usr/bin/python -u
 
+import os
 import signal
 import sys
 import socket
@@ -59,13 +60,15 @@ def stato_relays(csock):
 signal.signal(signal.SIGTERM, sigterm_handler)
 
 cfile = "default.txt"
+savedfile = os.path.dirname(sys.argv[0])+"/status.saved"
 port = 5002
+savedrestart=False
 STATUSELEMENTS=6
 gpioattrs=[]
 gpiostatuses=[]
 
 try: 
-   opts, args = getopt.getopt(sys.argv[1:],"c:p:")
+   opts, args = getopt.getopt(sys.argv[1:],"c:p:",['savedrestart'])
 except getopt.GetoptError:
    print 'RelaysServerTest -c <config file> -p <port number>'
    sys.exit(2)
@@ -74,8 +77,13 @@ for opt, arg in opts:
       port = int(arg)
    if opt == '-c':
       cfile = arg
+   if opt == '--savedrestart':
+      savedrestart=True
 
 print "File di configurazione: ",cfile
+if savedrestart & os.path.exists(savedfile):
+   cfile=savedfile
+   print "Utilizzo file con configurazione precedente" 
 
 ocfile = open(cfile)
 line = ocfile.readline()
@@ -86,6 +94,7 @@ while len(line):
     gpioattrs.append(gpioattr)
   line =ocfile.readline()
 print "end of file reached"
+ocfile.close()
 
 GPIO.setmode(GPIO.BCM)
 for gpio, name, mask, oncond, start, lock in gpioattrs:
@@ -164,3 +173,8 @@ finally:
    print "Closing socket..."   	
    ret=server_socket.close()
    print "socket closed ",ret 
+   print "ready to save the status in ",savedfile
+   sout = open(savedfile,"w")
+   for gpio,name,mask,oncond,status,lock in gpiostatuses:
+       print>>sout, gpio,name,mask,oncond,status,lock
+   	
