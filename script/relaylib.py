@@ -20,19 +20,19 @@ def comando(host,port,command):
     return ''.join(reply)
 
 def accendi(host,port,gpioch):
-    return comando(host,port,"accendi %d" %(gpioch))
+    return comando(host,port,"accendi %s" %(gpioch))
 
 def spegni(host,port,gpioch):
-    return comando(host,port,"spegni %d" %(gpioch))
+    return comando(host,port,"spegni %s" %(gpioch))
 
 def abilita_bit(host,port,gpioch,bit):
-    return comando(host,port,"abilita %d %d" % (gpioch,bit))
+    return comando(host,port,"abilita %s %d" % (gpioch,bit))
 
 def disabilita_bit(host,port,gpioch,bit):
-    return comando(host,port,"disabilita %d %d" % (gpioch,bit))
+    return comando(host,port,"disabilita %s %d" % (gpioch,bit))
 
 def configura_bit(host,port,gpioch,bitmask):
-    return comando(host,port,"configura %d %d" % (gpioch,bitmask)) 
+    return comando(host,port,"configura %s %d" % (gpioch,bitmask)) 
 
 def stato(host,port):
     statusstring = comando(host,port,"stato")

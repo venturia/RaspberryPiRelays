@@ -15,7 +15,10 @@ def sigterm_handler(signum,frame):
     raise GracefulSigTerm()
 
 def trova_gpiostatus(gpioch):
-    return next((st for st in gpiostatuses if st[0]==gpioch),[])
+    if gpioch.isdigit():
+      return next((st for st in gpiostatuses if st[0]==int(gpioch)),[])
+    else:
+      return next((st for st in gpiostatuses if st[1]==gpioch),[])
 
 def decidi_relay(gpiost):
     print "decidere GPIO",gpiost[0],gpiost[4],gpiost[3]
@@ -119,9 +122,10 @@ try:
        print "RECEIVED from ",address, " :" , data
        command=data.split()
        if len(command)>1:
-          gpiost = trova_gpiostatus(int(command[1]))
+          gpiost = trova_gpiostatus(command[1])
           if len(gpiost)==STATUSELEMENTS:
              if len(command)>2:
+                 if command[2].isdigit() :
                     if command[0] == 'abilita':
                         gpiobit=2**int(command[2]) & 2**gpiost[2]-1
                         if gpiobit>0:
@@ -145,6 +149,9 @@ try:
                         else:
                            print "bitmask da configurare non valida"
                            client_socket.send("$22$ *bitmask %s non valida per GPIO %d*" % (command[2], gpiost[0])) 
+                 else:
+                     print "bit/bimask non intero"
+                     client_socket.send("$23$ *bit o bitmask non intero: %s" % command[2])
              elif len(command)>1:
                 if command[0] == 'accendi':
                     accensione_relay(gpiost)
@@ -153,7 +160,7 @@ try:
                     spegnimento_relay(gpiost)
                     client_socket.send("$0$ *spegnimento GPIO %d eseguito*" % gpiost[0])
           else:
-             client_socket.send("$31$ *Numero porta GPIO non riconosciuto*") 
+             client_socket.send("$31$ *Numero o nome porta GPIO non riconosciuto: %s*" % command[1]) 
        elif command[0] == 'stato':
             stato_relays(client_socket)
        client_socket.close()
