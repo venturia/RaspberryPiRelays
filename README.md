@@ -6,3 +6,7 @@ Per i raspberry senza `systemd` bisogna mettere questa linea nel file di configu
 
 Per segnalare lo stato dell'allarme presenze con i LED occorre eseguire:
 `./RaspberryPiRelays/script/presencealarmChecker.sh RaspberryPiRelays/script/presencealarmConfig.txt &`
+
+per funzionare bisogna installare inotify-tools:
+
+sudo apt-get installa inotify-tools
