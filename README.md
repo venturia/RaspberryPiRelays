@@ -9,4 +9,4 @@ Per segnalare lo stato dell'allarme presenze con i LED occorre eseguire:
 
 per funzionare bisogna installare inotify-tools:
 
-sudo apt-get installa inotify-tools
+sudo apt-get install inotify-tools
