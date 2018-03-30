@@ -1,11 +1,11 @@
 [Unit]
-Description=Relay Server
+Description=Presence Alarm Checker
 Documentation=https://github.com/venturia/RaspberryPiRelays
 After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=INSTALLATIONDIRECTORY/script/RelaysServerTest.py --savedrestart -p SERVERPORT -c INSTALLATIONDIRECTORY/script/SERVERCONFIGFILE
+ExecStart=INSTALLATIONDIRECTORY/script/presencealarmChecker.sh INSTALLATIONDIRECTORY/script/PRESENCEALARMCHECKERCONFIGFILE
 Restart=on-failure
 RestartSec=180
 
