@@ -13,3 +13,6 @@ quando systemd non e' disponibile. Altrimenti viene installato automaticamente c
 
 Per funzionare bisogna installare inotify-tools:
 `sudo apt-get install inotify-tools`
+
+Altri pacchetti da installare:
+`sudo apt-get install apache2`
