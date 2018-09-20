@@ -5,6 +5,7 @@ CGIDIR=/usr/lib/cgi-bin
 SYSTEMDLIB=/lib/systemd/system
 SERVERPORT=5002
 SERVERCONFIGFILE=""
+PRESENCEALARMCHECKERCONFIGFILE=""
 
 read -p "web server file directory [$WEBDIR]" chosenwebdir
 
@@ -18,10 +19,13 @@ if [ ${#chosenserverport} != 0 ]; then
 fi
 read -p "Server configuration file [$SERVERCONFIGFILE]" chosenconfigfile
 SERVERCONFIGFILE=$chosenconfigfile
+read -p "Presence alarm checker configuration file [$PRESENCEALARMCHECKERCONFIGFILE]" pacchosenconfigfile
+PRESENCEALARMCHECKERCONFIGFILE=$pacchosenconfigfile
 
 echo "Web page file directory $WEBDIR"
 echo "Server port $SERVERPORT"
 echo "Server configuration file $SERVERCONFIGFILE"
+echo "Presence alarm checker configuration file $PRESENCEALARMCHECKERCONFIGFILE"
 echo "Installation directory ${PWD}"
 
 # copy the web pages in the web server subdirectory "relays"
@@ -61,4 +65,15 @@ if [ ${#SERVERCONFIGFILE} != 0 ]
   systemctl start relayserver.service
 else
   echo "The server will NOT be installed on this node"
+fi
+
+if [ ${#PRESENCEALARMCHECKERCONFIGFILE} != 0 ]
+ then
+  echo "Preparing the configuration file for systemd"
+  sed 's:INSTALLATIONDIRECTORY:'${PWD}':g;s:PRESENCEALARMCHECKERCONFIGFILE:'${PRESENCEALARMCHECKERCONFIGFILE}':g' presencealarmchecker.service > ${SYSTEMDLIB}/presencealarmchecker.service
+  systemctl daemon-reload
+  systemctl stop presencealarmchecker.service
+  systemctl start presencealarmchecker.service
+else
+  echo "The presence alarm checker will NOT be installed on this node"
 fi

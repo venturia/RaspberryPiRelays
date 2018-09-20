@@ -1,0 +1,3 @@
+raspberrypi04.local 5002 23 1
+raspberrypi04.local 5002 25 1
+
