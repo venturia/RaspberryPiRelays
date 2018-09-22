@@ -52,6 +52,13 @@ def set_bit_relay(gpiost,bitmask):
     gpiost[4]= bitmask & (2**gpiost[2]-1) # in this way bits outside the mask are ignored
     decidi_relay(gpiost)
 
+def stato_relay(csock,gpiost):
+    print "Stampo stato GPIO ",gpiost[0]
+    statusstring = StringIO.StringIO()
+    print>>statusstring, "$0$ *richiesta stato GPIO ",gpiost[0]," eseguita*"
+    print>>statusstring, GPIO.input(gpiost[0])
+    csock.send(statusstring.getvalue())
+
 def stato_relays(csock):
     print "Stampo stato"
     statusstring = StringIO.StringIO()
@@ -159,6 +166,8 @@ try:
                 if command[0] == 'spegni':
                     spegnimento_relay(gpiost)
                     client_socket.send("$0$ *spegnimento GPIO %d eseguito*" % gpiost[0])
+                if command[0] == 'stato':
+                    stato_relay(client_socket,gpiost)
           else:
              client_socket.send("$31$ *Numero o nome porta GPIO non riconosciuto: %s*" % command[1]) 
        elif command[0] == 'stato':

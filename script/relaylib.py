@@ -25,6 +25,9 @@ def accendi(host,port,gpioch):
 def spegni(host,port,gpioch):
     return comando(host,port,"spegni %s" %(gpioch))
 
+def stato_gpio(host,port,gpioch):
+    return comando(host,port,"stato %s" %(gpioch))
+
 def abilita_bit(host,port,gpioch,bit):
     return comando(host,port,"abilita %s %d" % (gpioch,bit))
 
