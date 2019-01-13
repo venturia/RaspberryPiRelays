@@ -48,10 +48,12 @@ sed 's:INSTALLATIONDIRECTORY:'${PWD}':g' webpages/accensione_relays.py > ${CGIDI
 sed 's:INSTALLATIONDIRECTORY:'${PWD}':g' webpages/spegnimento_relays.py > ${CGIDIR}/relays/spegnimento_relays.py
 sed 's:INSTALLATIONDIRECTORY:'${PWD}':g' webpages/configura_bitmask.py > ${CGIDIR}/relays/configura_bitmask.py
 sed 's:INSTALLATIONDIRECTORY:'${PWD}':g' webpages/stato_relays.py > ${CGIDIR}/relays/stato_relays.py
+sed 's:INSTALLATIONDIRECTORY:'${PWD}':g' webpages/stato_relay.py > ${CGIDIR}/relays/stato_relay.py
 chmod +x ${CGIDIR}/relays/accensione_relays.py
 chmod +x ${CGIDIR}/relays/spegnimento_relays.py
 chmod +x ${CGIDIR}/relays/configura_bitmask.py
 chmod +x ${CGIDIR}/relays/stato_relays.py
+chmod +x ${CGIDIR}/relays/stato_relay.py
 #cp -v webpages/*.py ${CGIDIR}/relays/.
 
 # prepare and copy the configuration file of thr service for systemd

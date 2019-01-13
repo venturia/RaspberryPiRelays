@@ -31,9 +31,9 @@ else:
 
 if os.path.isfile("/var/apache/enabled_alarm"):
    for node,port,gpioch,bit in clines:
-      relaylib.abilita_bit(node,int(port),int(gpioch),int(bit))
+      relaylib.abilita_bit(node,int(port),gpioch,int(bit))
 else:
    for node,port,gpioch,bit in clines:
-      relaylib.disabilita_bit(node,int(port),int(gpioch),int(bit))
+      relaylib.disabilita_bit(node,int(port),gpioch,int(bit))
 
 

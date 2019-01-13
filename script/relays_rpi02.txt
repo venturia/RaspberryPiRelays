@@ -1,0 +1,7 @@
+17 VERDE 3 7 0 0
+27 GIALLO 3 1 0 0
+22 ROSSO 1 1 0 0
+23 green 3 1 0 0
+24 yellow 1 1 0 0
+25 orange 1 1 0 0
+
